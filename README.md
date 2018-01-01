@@ -10,7 +10,7 @@ class Content_Loss(nn.Module):
         super(Content_Loss, self).__init__()
         self.weight = weight
         self.target = target.detach() * self.weight
-        # 必须要用detach来分离出target，这时候target不再是一个Variable，这是为了动态计算梯度，否则forward会出错，不能向前传播
+        # 必须要用 detach 来分离出 target，这时候 target 不再是一个 Variable，这是为了动态计算梯度，否则 forward 会出错，不能向前传播
         self.criterion = nn.MSELoss()
 
     def forward(self, input):
@@ -189,12 +189,12 @@ def run_style_transfer(content_img, style_img, input_img, num_epoches=300):
 
 - 内容图片
 
-![](./image/content.png)
+![](./images/content.png)
 
 - 风格图片
 
-![](./image/style.png)
+![](./images/style.png)
 
-- 合成图片
+- 合成图片(内容与风格权重比为 1:1000)
 
-![](./image/input.png)
+![](./images/input.png)
