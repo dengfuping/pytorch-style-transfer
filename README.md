@@ -2,7 +2,7 @@
 
 ## PyTorch 代码实现
 
-### 1. 内容差异的loss定义
+### 1. 内容差异的 loss 定义
 
 ```python
 class Content_Loss(nn.Module):
@@ -27,7 +27,7 @@ class Content_Loss(nn.Module):
 - weight: 内容权重
 - input: 输入图片（目标图片/初始化图片）
 
-### 2. 风格差异的loss定义
+### 2. 风格差异的 loss 定义
 
 #### 2.1 Gram 矩阵的定义
 
@@ -35,7 +35,7 @@ class Content_Loss(nn.Module):
 class Gram(nn.Module):
     def __init__(self):
         super(Gram, self).__init__()
- 
+
     def forward(self, input):
         a, b, c, d = input.size()
         feature = input.view(a * b, c * d)
@@ -44,7 +44,7 @@ class Gram(nn.Module):
         return gram
 ```
 
-#### 2.2. style loss定义
+#### 2.2. style loss 定义
 
 ```python
 class Style_Loss(nn.Module):
@@ -54,13 +54,13 @@ class Style_Loss(nn.Module):
         self.target = target.detach() * self.weight
         self.gram = Gram()
         self.criterion = nn.MSELoss()
- 
+
     def forward(self, input):
         G = self.gram(input) * self.weight
         self.loss = self.criterion(G, self.target)
         out = input.clone()
         return out
- 
+
     def backward(self, retain_variabels=True):
         self.loss.backward(retain_variables=retain_variabels)
         return self.loss
@@ -77,54 +77,56 @@ class Style_Loss(nn.Module):
 
 ```python
 vgg = models.vgg19(pretrained=True).features
-vgg = vgg.cuda()
- 
-content_layers_default = [\'conv_4\']
-style_layers_default = [\'conv_1\', \'conv_2\', \'conv_3\', \'conv_4\', \'conv_5\']
- 
- 
-def get_style_model_and_loss(style_img, content_img, cnn=vgg,
-                             style_weight=1000,
+# vgg = vgg.cuda()
+
+content_layers_default = ['conv_4']
+style_layers_default = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
+
+
+def get_style_model_and_loss(style_img,
+                             content_img,
+                             cnn=vgg,
+                             style_weight=1,
                              content_weight=1,
                              content_layers=content_layers_default,
                              style_layers=style_layers_default):
- 
+
     content_loss_list = []
     style_loss_list = []
- 
+
     model = nn.Sequential()
-    model = model.cuda()
+    # model = model.cuda()
     gram = loss.Gram()
-    gram = gram.cuda()
- 
+    # gram = gram.cuda()
+
     i = 1
     for layer in cnn:
         if isinstance(layer, nn.Conv2d):
-            name = \'conv_\'   str(i)
+            name = 'conv_' + str(i)
             model.add_module(name, layer)
- 
+
             if name in content_layers_default:
                 target = model(content_img)
                 content_loss = loss.Content_Loss(target, content_weight)
-                model.add_module(\'content_loss_\'   str(i), content_loss)
+                model.add_module('content_loss_' + str(i), content_loss)
                 content_loss_list.append(content_loss)
- 
+
             if name in style_layers_default:
                 target = model(style_img)
                 target = gram(target)
                 style_loss = loss.Style_Loss(target, style_weight)
-                model.add_module(\'style_loss_\'   str(i), style_loss)
+                model.add_module('style_loss_' + str(i), style_loss)
                 style_loss_list.append(style_loss)
- 
-            i  = 1
+
+            i += 1
         if isinstance(layer, nn.MaxPool2d):
-            name = \'pool_\'   str(i)
+            name = 'pool_' + str(i)
             model.add_module(name, layer)
- 
+
         if isinstance(layer, nn.ReLU):
-            name = \'relu\'   str(i)
+            name = 'relu' + str(i)
             model.add_module(name, layer)
- 
+
     return model, style_loss_list, content_loss_list
 ```
 
@@ -138,47 +140,44 @@ def get_input_param_optimier(input_img):
     input_param = nn.Parameter(input_img.data)
     optimizer = optim.LBFGS([input_param])
     return input_param, optimizer
- 
- 
-def run_style_transfer(content_img, style_img, input_img,
-                       num_epoches=300):
-    print(\'Building the style transfer model..\')
+
+
+def run_style_transfer(content_img, style_img, input_img, num_epoches=300):
+    print('Building the style transfer model...')
     model, style_loss_list, content_loss_list = get_style_model_and_loss(
-        style_img, content_img
-    )
+        style_img, content_img)
     input_param, optimizer = get_input_param_optimier(input_img)
- 
-    print(\'Opimizing...\')
+
+    print('Opimizing...')
     epoch = [0]
     while epoch[0] < num_epoches:
- 
+
         def closure():
             input_param.data.clamp_(0, 1)
- 
+
             model(input_param)
             style_score = 0
             content_score = 0
- 
+
             optimizer.zero_grad()
             for sl in style_loss_list:
-                style_score  = sl.backward()
+                style_score += sl.backward()
             for cl in content_loss_list:
-                content_score  = cl.backward()
- 
-            epoch[0]  = 1
+                content_score += cl.backward()
+
+            epoch[0] += 1
             if epoch[0] % 50 == 0:
-                print(\'run {}\'.format(epoch))
-                print(\'Style Loss: {:.4f} Content Loss: {:.4f}\'.format(
-                    style_score.data[0], content_score.data[0]
-                ))
+                print('run {}'.format(epoch))
+                print('Style Loss: {:.4f} Content Loss: {:.4f}'.format(
+                    style_score.data[0], content_score.data[0]))
                 print()
- 
-            return style_score   content_score
- 
+
+            return style_score + content_score
+
         optimizer.step(closure)
- 
+
         input_param.data.clamp_(0, 1)
- 
+
     return input_param.data
 ```
 注意：
