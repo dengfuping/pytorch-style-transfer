@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torchvision.models as models
 
-import loss
+from src import loss
 
 vgg = models.vgg19(pretrained=True).features
 # vgg = vgg.cuda()

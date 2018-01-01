@@ -1,7 +1,7 @@
 import torch.nn as nn
 import torch.optim as optim
 
-from build_model import get_style_model_and_loss
+from src.build_model import get_style_model_and_loss
 
 
 def get_input_param_optimier(input_img):
