@@ -13,7 +13,7 @@ style_layers_default = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 def get_style_model_and_loss(style_img,
                              content_img,
                              cnn=vgg,
-                             style_weight=1,
+                             style_weight=1000,
                              content_weight=1,
                              content_layers=content_layers_default,
                              style_layers=style_layers_default):
