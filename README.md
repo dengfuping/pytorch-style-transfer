@@ -86,7 +86,7 @@ style_layers_default = ['conv_1', 'conv_2', 'conv_3', 'conv_4', 'conv_5']
 def get_style_model_and_loss(style_img,
                              content_img,
                              cnn=vgg,
-                             style_weight=1,
+                             style_weight=1000,
                              content_weight=1,
                              content_layers=content_layers_default,
                              style_layers=style_layers_default):
@@ -186,6 +186,28 @@ def run_style_transfer(content_img, style_img, input_img, num_epoches=300):
 - 我们可以将内容图片直接 copy 成合成图片，然后训练使得他的风格和我们的风格图片相似，同时也可以随机化一张图片作为合成图片，然后训练他使得他与内容图片以及风格图片具有相似性。
 
 ### 实验结果
+
+- 训练过程(训练次数为 300)
+
+```
+run [50]
+Style Loss: 2.6082 Content Loss: 5.7334
+
+run [100]
+Style Loss: 0.5668 Content Loss: 5.4259
+
+run [150]
+Style Loss: 0.4087 Content Loss: 5.1388
+
+run [200]
+Style Loss: 0.3185 Content Loss: 5.0379
+
+run [250]
+Style Loss: 0.2532 Content Loss: 4.9484
+
+run [300]
+Style Loss: 0.2143 Content Loss: 4.9017
+```
 
 - 内容图片
 
