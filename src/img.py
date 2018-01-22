@@ -16,3 +16,9 @@ def show_img(img):
     img = img.squeeze(0)
     img = transforms.ToPILImage()(img)
     img.show()
+
+
+def save_img(img):
+    img = img.squeeze(0)
+    img = transforms.ToPILImage()(img)
+    img.save('../images/output.png')
