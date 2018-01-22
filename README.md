@@ -187,7 +187,7 @@ def run_style_transfer(content_img, style_img, input_img, num_epoches=300):
 
 ### 实验结果
 
-- 训练过程(训练次数为 300)
+- 训练过程(训练次数为 600 次)
 
 ```
 run [50]
@@ -207,6 +207,24 @@ Style Loss: 0.2532 Content Loss: 4.9484
 
 run [300]
 Style Loss: 0.2143 Content Loss: 4.9017
+
+run [350]
+Style Loss: 0.1950 Content Loss: 4.8683
+
+run [400]
+Style Loss: 191.7546 Content Loss: 8.5052
+
+run [450]
+Style Loss: 2.8671 Content Loss: 7.3701
+
+run [500]
+Style Loss: 0.8463 Content Loss: 6.5618
+
+run [550]
+Style Loss: 0.4655 Content Loss: 6.0649
+
+run [600]
+Style Loss: 0.3302 Content Loss: 5.7489
 ```
 
 - 内容图片
@@ -217,6 +235,10 @@ Style Loss: 0.2143 Content Loss: 4.9017
 
 ![](./images/style.png)
 
-- 合成图片(内容与风格权重比为 1:1000)
+- 输入图片
 
 ![](./images/input.png)
+
+- 输出图片(内容与风格权重比为 1:1000)
+
+![](./images/output.png)
